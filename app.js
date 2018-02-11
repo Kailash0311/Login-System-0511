@@ -5,10 +5,104 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+
 var index = require('./routes/index');
 var users = require('./routes/users');
 
+//mongoose database connection
+
+var mongoose=require('mongoose');
+var url='mongodb://localhost:27017/user'
+ var db
+
+ 
+
+mongoose.connect(url,function(err,database)
+{
+if(err)
+  {
+    console.log("Didn't connect to the database server..22111")
+  }
+else
+  {
+    console.log("Connected succesfully to the server...")
+  }
+}
+
+)
+
+//schema for mongoose
+
+/*mongoose.model('User',{
+  *username:String,
+  email: String,
+  gender: String,
+  facebookId:Number
+});*/
+
+//passport
+
+var passport=require('passport'), FacebookStrategy=require('passport-facebook').Strategy;
+
+var Schema = mongoose.Schema;
+var UserSchema = new Schema(
+  {
+  facebookId: Number,
+  username:String,
+  email: String,
+  gender: String,
+
+});
+
+var User = mongoose.model('User', UserSchema);
+
+passport.use(new FacebookStrategy({
+clientID:'1997237017267937',
+clientSecret: '961f12f5ac42d1defe1aaf602f506213',
+callbackURL:"http://localhost:3000/auth/facebook/callback"
+
+},
+function(accesToken,refreshToken,profile,done){
+  User.findOne({facebookId:profile.id} , function(err,user){
+    if(err){
+      return done(err);
+    }
+    if(!user){
+            
+            user : new User({
+            username:profile.displayName,
+            email:profile.email,
+            
+      },
+      console.log(profile.displayName));
+      return done(null,user);
+     /* user.save(function(err)
+      {
+          if(err) console.log(err);
+          return done(err,user);
+
+      })*/
+    }
+    else{
+      return done(null,user);
+      //console.log("welcome "+ profile.displayName);
+    }
+    
+
+  })
+}
+));
+
 var app = express();
+
+app.get('/auth/facebook', passport.authenticate('facebook'));
+
+app.get('/auth/facebook/callback', 
+  passport.authenticate('facebook', { failureRedirect: '/' }),
+  function(req, res) {
+    console.log("userss...")
+    res.redirect('/users');
+  });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
