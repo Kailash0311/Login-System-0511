@@ -58,7 +58,7 @@ var User = mongoose.model('User', UserSchema);
 
 passport.use(new FacebookStrategy({
 clientID:'1997237017267937',
-clientSecret: '961f12f5ac42d1defe1aaf602f506213',
+clientSecret: 'xxxxxxxxxxxxxx',
 callbackURL:"http://localhost:3000/auth/facebook/callback"
 
 },
