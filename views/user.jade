@@ -1,10 +1,17 @@
 extends layout
 
 block content
-  h1= name
+ 
+  body(class="body-bkimg")
+    div(class="dash")
+        h1() Dashboard
 
   
 
-  p Welcome, #{name}
+        h2 Hi, #{name}
+       
+ 
 
-  a(href="/logout") Logout !
+        a(href="/logout",class="logout") Logout !
+
+  

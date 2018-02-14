@@ -1,3 +1,5 @@
+//import { link } from 'fs';
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -5,14 +7,17 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
+var session=require('express-session');
 var index = require('./routes/index');
 var users = require('./routes/users');
+var passport=require('passport'), 
+FacebookStrategy=require('passport-facebook').Strategy;
 //var findOrCreate=require('mongoose-findorcreate');
 
 //mongoose database connection
 
 var mongoose=require('mongoose');
-var url='mongodb://localhost:27017/1user'
+var url='mongodb://localhost:27017/user1'
  var db
 
  
@@ -31,19 +36,11 @@ else
 }
 
 )
-var passport=require('passport'), 
-FacebookStrategy=require('passport-facebook').Strategy;
+
 //passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-passport.serializeUser(function(user, done) {
-  done(null, user);
-});
-passport.deserializeUser(function(obj, done) {
-  done(null, obj);
-})
 
 var Schema = mongoose.Schema;
 var UserSchema = new Schema(
@@ -52,17 +49,18 @@ var UserSchema = new Schema(
   username:String,
   email: String,
   gender: String,
-  provider:String
+  provider:String,
+  bday:String
 
 });
 
 var User = mongoose.model('User', UserSchema);
 
 
-app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email']}));
+app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['user_friends', 'email', 'public_profile'],}));
 
 app.get('/auth/facebook/callback', 
-  passport.authenticate('facebook', { successRedirect:'/users',failureRedirect: '/'}),
+  passport.authenticate('facebook', { successRedirect:'/users',failureRedirect: '/',scope:['emails']}),
 function(req,res){
   res.redirect('/');
 }
@@ -74,7 +72,7 @@ passport.use(new FacebookStrategy({
 clientID:'1997237017267937',
 clientSecret: '961f12f5ac42d1defe1aaf602f506213',
 callbackURL:"http://localhost:3000/auth/facebook/callback",
-profileFields: ['id', 'displayName', 'photos', 'email'],
+profileFields: ['id', 'displayName', 'email', 'birthday', 'friends', 'first_name', 'last_name', 'middle_name', 'gender', 'link'],
 enableProof: true
 },
 function(accesToken,refreshToken,profile,done){
@@ -90,8 +88,9 @@ function(accesToken,refreshToken,profile,done){
               provider: 'facebook',
               facebook: profile._json,
               username:profile.displayName,
-              email:profile.email,
-              facebookId:profile.id
+              email:profile.emails,
+              facebookId:profile.id,
+              bday:profile.birthday
           
             }),
       //saving and adding user into the database
@@ -101,7 +100,7 @@ function(accesToken,refreshToken,profile,done){
        
         //if(err){console.log("not inserted")}
         if(user){
-          console.log(user.username + "inserted into the database collection"+user.email)
+          console.log(user.username + "inserted into the database collection"+user.email+user.bday)
         };
 
       });
@@ -130,12 +129,32 @@ function(accesToken,refreshToken,profile,done){
     }
   })
 }))
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
+})
+
+
 
 
 app.get('/logout', function(req, res){
-  console.log("hello")
-  req.logOut();
-  res.redirect('/');
+    
+ /* req.session.destroy(
+    function(err){
+      if(err){
+        console.log(err);
+    }
+    else{
+        req.end();
+        res.redirect('/');
+    }
+  })*/
+  req.logout();
+  req.session=null;
+  res.redirect('/')
+  
 });
 
 
@@ -148,6 +167,11 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
+app.use(session({
+  resave: true,
+  saveUninitialized: true,
+  secret:'hello'
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -174,4 +198,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app 
+module.exports = app
