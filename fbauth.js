@@ -45,6 +45,7 @@ module.exports=function(passport){
             console.log(profile.displayName+" has logged in with e-mail id : "+ profile.emails)
             //name is made as global so that it can be accessible from other files and can be rendered to the jade template :)
               global.name=profile.displayName;
+              
               return done(null,user);
         } 
         else{
@@ -59,16 +60,24 @@ module.exports=function(passport){
                   facebookId:profile.id
               
                 })
-              global.name=profile.displayName;
-          console.log("welcome "+ user.username+user.facebook);
+          global.name=profile.displayName;
+          console.log("welcome "+ user.username+user.first_name);
+          global.fbid=user.facebook.id;
+          global.gender=user.facebook.gender;
+          global.firstname=user.facebook.first_name;
+          global.lastname=user.facebook.last_name;
           return done(null,user);
         }
       })
     }))
     passport.serializeUser(function(user, done) {
-      done(null, user);
+      done(null, user.id);
     });
-    passport.deserializeUser(function(obj, done) {
-      done(null, obj);
+    passport.deserializeUser(function(id, done) {
+      User.findById(id).then(function(user)
+    {
+      done(null,user)
+    }
+    )
     })
 }

@@ -61,7 +61,7 @@ app.use(passport.session());
 
 var fbauth=require('./fbauth.js');
 fbauth(passport);
-app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['user_friends', 'email', 'public_profile'],}));
+app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['user_friends', 'email', 'public_profile']}));
 
 app.get('/auth/facebook/callback', 
   passport.authenticate('facebook', { successRedirect:'/users',failureRedirect: '/',scope:['emails']}),

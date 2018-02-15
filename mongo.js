@@ -11,7 +11,7 @@ var url='mongodb://localhost:27017/user1'
    gender: String,
    provider:String,
    bday:String,
-   //photo:String
+   photo:String
  
  });
  
