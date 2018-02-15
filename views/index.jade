@@ -3,10 +3,13 @@ extends layout
 block content 
   
   body(class="body-bkimg")
-      h1 :D
+      h1(class="index-h").
+          Login to continue ! 
   
-    button(class="button-index")
-      a(href="/auth/facebook",title="Login with facebook") Login with Facebook ! 
+    button(class="button")
+        i(class="fa fa-facebook-official")
+            a(href="/auth/facebook",title="Login with facebook",class="fb")
+                    span Login with Facebook ! 
 
     p(class="p1") Welcome to Localhost:3000 :)
 
