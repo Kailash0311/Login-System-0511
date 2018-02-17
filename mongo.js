@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var url='mongodb://localhost:27017/user1'
+var url='mongodb://localhost:27017/user5'
  var db
  var Schema = mongoose.Schema;
  var UserSchema = new Schema(
