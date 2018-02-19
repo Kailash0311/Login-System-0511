@@ -12,6 +12,7 @@ var fileup=require('./routes/fileup')
 var passport=require('passport'), 
 FacebookStrategy=require('passport-facebook').Strategy;
 var fileUpload=require('express-fileupload');
+var Userfile=require('./mongo.js');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -80,9 +81,9 @@ app.get('/logout', function(req, res){
 });
 app.post('/upload',function(req,res){
   var filedash = req.files.filedash;
-  console.log(req.files.filedash.name);
+  console.log("this is "+req.files.filedash.name);
   global.filename=req.files.filedash.name;
-  filedash.mv('./public/images/filedash.pdf',function(err){
+  filedash.mv('./public/images/filedash',function(err){
     if (err){
       console.log("error");
       return res.status(500).send(err);
@@ -90,14 +91,14 @@ app.post('/upload',function(req,res){
     }
     Userfile=new Userfile ({
       facebookId:fbid,
-      filename:req.filedash.name,
-      filetype:req.filedash.type,
-      filesize:req.filedash.size  
+      filename:req.files.filedash.name,
+      filetype:req.files.filedash.mimetype,
+      filesize:req.files.filedash.fileSize  
 
     });
     Userfile.save().then(function(Userfile){
       if(Userfile)
-      console.log("file's metadata added to the data base");
+      console.log("file's metadata added to the data base"+Userfile.filetype+Userfile.filesize);
     });
     
     console.log("file is uploaded ! ")

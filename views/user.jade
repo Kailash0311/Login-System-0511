@@ -4,7 +4,7 @@ block content
  
   body(class="body-bkimg")
     div(class="dash")
-        h1() Dashboard
+        h1 Dashboard
 
   
 
@@ -18,14 +18,11 @@ block content
         h4 Gender :#{gender}
         br 
         h6 facebookid :#{fbid}      
-       
-        script. 
-             var  name=filename;
         
 
         a(href="/logout",class="logout") Logout !
     form(action="http://localhost:3000/upload",method="POST",id="uploadform",ref="uploadform", enctype="multipart/form-data")
-        input(type="file",name="filedash",accept=".pdf,.doc,docx")
+        input(type="file",name="filedash",accept=".pdf,.doc,docx",required)
         br
         input(type="submit",name="Upload !")
 

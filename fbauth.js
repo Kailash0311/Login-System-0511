@@ -46,10 +46,10 @@ module.exports=function(passport){
             //name is made as global so that it can be accessible from other files and can be rendered to the jade template :)
               global.name=profile.displayName;
           //console.log("welcome "+ user.username+user.first_name);
-          global.fbid=user.facebook.id;
-          global.gender=user.facebook.gender;
-          global.firstname=user.facebook.first_name;
-          global.lastname=user.facebook.last_name;
+          global.fbid=user.facebookId;
+          global.gender=profile.gender;
+          global.firstname=profile.name.givenName;
+          global.lastname=profile.name.familyName;
               
               return done(null,user);
         } 
@@ -65,12 +65,16 @@ module.exports=function(passport){
                   facebookId:profile.id
               
                 })
+          
           global.name=profile.displayName;
-          console.log("welcome , hello"+ user.facebook.first_name+user.facebook.last_name);
-          global.fbid=user.facebook.id;
-          global.gender=user.facebook.gender;
-          global.firstname=user.facebook.first_name;
-          global.lastname=user.facebook.last_name;
+          console.log(user);
+          console.log(profile);
+          console.log(user.facebookId);
+    
+          global.fbid=user.facebookId;
+          global.gender=profile.gender;
+          global.firstname=profile.name.givenName;
+          global.lastname=profile.name.familyName;
           return done(null,user);
         }
       })
