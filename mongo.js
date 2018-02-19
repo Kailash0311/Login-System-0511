@@ -11,9 +11,16 @@ var url='mongodb://localhost:27017/user5'
    gender: String,
    provider:String,
    bday:String,
-   photo:String
+   photo:String,
  
  });
  
  var User = mongoose.model('User', UserSchema);
+ var Userfile=mongoose.model('Userfile',{
+  facebookId:Number,
+  filename:String,
+  filetype:String,
+  filesize:String    
+ })
  module.exports=User;
+ module.exports=Userfile;

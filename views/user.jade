@@ -19,8 +19,16 @@ block content
         br 
         h6 facebookid :#{fbid}      
        
- 
+        script. 
+             var  name=filename;
+        
 
         a(href="/logout",class="logout") Logout !
+    form(action="http://localhost:3000/upload",method="POST",id="uploadform",ref="uploadform", enctype="multipart/form-data")
+        input(type="file",name="filedash",accept=".pdf,.doc,docx")
+        br
+        input(type="submit",name="Upload !")
+
+       
 
   

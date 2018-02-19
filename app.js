@@ -8,8 +8,10 @@ var app = express();
 var session=require('express-session');
 var index = require('./routes/index');
 var users = require('./routes/users');
+var fileup=require('./routes/fileup')
 var passport=require('passport'), 
 FacebookStrategy=require('passport-facebook').Strategy;
+var fileUpload=require('express-fileupload');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -17,6 +19,7 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(fileUpload());
 app.use(logger('dev'));
 app.use(session({
   resave: true,
@@ -30,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/fileup',fileup);
  
 //mongoose database connection
 var mongoose=require('mongoose');
@@ -74,6 +78,35 @@ app.get('/logout', function(req, res){
   res.redirect('/')
   
 });
+app.post('/upload',function(req,res){
+  var filedash = req.files.filedash;
+  console.log(req.files.filedash.name);
+  global.filename=req.files.filedash.name;
+  filedash.mv('./public/images/filedash.pdf',function(err){
+    if (err){
+      console.log("error");
+      return res.status(500).send(err);
+     
+    }
+    Userfile=new Userfile ({
+      facebookId:fbid,
+      filename:req.filedash.name,
+      filetype:req.filedash.type,
+      filesize:req.filedash.size  
+
+    });
+    Userfile.save().then(function(Userfile){
+      if(Userfile)
+      console.log("file's metadata added to the data base");
+    });
+    
+    console.log("file is uploaded ! ")
+   res.render('fileup',{name:filename});
+  })
+
+
+
+})
 
 
 
