@@ -4,8 +4,10 @@ block content
   
   body(class="body-bkimg")
       h1(class="index-h").
-        Name of the file uploaded is : #{name}
-
+        Name of the file uploaded is : 
+-each name in names
+ p
+  =name.filename       	
     a(href="/logout",class="logout") Logout !    
 
    

@@ -65,15 +65,23 @@ app.use(passport.session());
 
 
 var fbauth=require('./fbauth.js');
+var goauth=require('./googleoauth.js')
 fbauth(passport);
+goauth(passport);
 app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['user_friends', 'email', 'public_profile']}));
 
-app.get('/auth/facebook/callback', 
+app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect:'/users',failureRedirect: '/',scope:['emails']}),
 function(req,res){
   res.redirect('/');
 }
 );
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile','email'] }));
+
+app.get('/auth/google/callback', passport.authenticate('google'), (req,res) =>{
+    res.redirect('/users/');
+    });
 app.get('/logout', function(req, res){
   req.logout();
   res.redirect('/')
@@ -100,9 +108,16 @@ app.post('/upload',function(req,res){
       if(Userfile)
       console.log("file's metadata added to the data base"+Userfile.filetype+Userfile.filesize);
     });
+    db.collection("userfiles").find({facebookId:fbid}).toArray(function(err,user){
+      if(err) 
+        console.log(err);
+      res.render('fileup',{name:user});
+      console.log(user[3].filename);
+    })
+    
     
     console.log("file is uploaded ! ")
-   res.render('fileup',{name:filename});
+   //res.render('fileup',{name:filename});
   })
 
 
